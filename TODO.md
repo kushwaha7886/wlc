@@ -1,6 +1,12 @@
-# TODO: Fix App Crash Issues
-
-- [x] Update Backend/index.js to correct the import path for app
-- [x] Fix export of connectToDatabase in Backend/src/db/index.js
-- [x] Export controller functions and stub services in Backend/src/controllers/user.controller.js
-- [x] Import controller functions in Backend/src/routes/user.routes.js
+- Fix export in ApiError.js: Change `exports = {ApiError};` to `export {ApiError};`
+- Fix export in ApiResponse.js: Add `export {apiResponse};`
+- Fix export in asynchandler.js: Change `export {asynchandler};` to `export {asyncHandler};` to match import
+- Fix export in User.model.js: Change `export {User};` to `export {User as user};` or update imports
+- Fix cloudinary.js: Ensure exports match imports, e.g., export uploadImage as uploadSingleImage if needed
+- Fix imports in user.controller.js: Correct case mismatches, e.g., asyncHandler, user, apiResponse, jwt
+- Fix logic errors in user.controller.js: Add missing const/let, correct method calls, fix typos like genrateAccessToken to generateAccessToken, isPasswordCorrect, etc.
+- Fix auth.middleware.js: Correct import paths, fix token extraction, remove function definition inside try, fix findbyId to findById
+- Fix user.routes.js: Correct import names, e.g., verifyjwt to verifyjwt, and ensure exported functions match
+- Fix package.json: Change "cookies-parser" to "cookie-parser"
+- Implement registerUser function in user.controller.js as it's empty
+- Test the app after fixes

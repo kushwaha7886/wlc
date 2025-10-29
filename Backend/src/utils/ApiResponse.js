@@ -3,6 +3,8 @@ class apiResponse {
         this.statusCode = statusCode
         this.message = message
         this.data = data
-        this.success =statusCode >= 400 && statusCode < 300 ? true : false 
-    }   
+        this.success =statusCode >= 400 && statusCode < 300 ? true : false
+    }
 }
+
+export {apiResponse};

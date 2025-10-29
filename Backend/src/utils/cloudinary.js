@@ -1,5 +1,5 @@
 import {v2 as cloudinary} from 'cloudinary';
-import {fs} from 'fs';
+import fs from 'fs';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -19,8 +19,10 @@ export const uploadImage = async (filePath) => {
 } catch (error) {
     fs.unlinkSync(filePath)
     return { error: error.message  } ;
-  }     
+  }
 };
+
+export const uploadSingleImage = uploadImage;
 
 export const deleteImage = async (publicId) => {
   try {
