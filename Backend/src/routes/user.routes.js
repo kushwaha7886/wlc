@@ -1,20 +1,31 @@
 import { verifyjwt } from '../middlewares/auth.middleware.js';
 import { Router } from 'express';
-import { registerUser, loginUser, logoutUser, refreshAccessToken, changePassword, getcurrentUser, updateaccountdetails, forgotPassword, resetPassword, updateuseravtar, updatercoverimage } from '../controllers/user.controller.js';
+import { registerUser, loginUser, logoutUser, refreshAccessToken, changePassword, getcurrentUser, updateaccountdetails, forgotPassword, resetPassword, updateuseravtar, updatercoverimage, getUserProfile, getwatchhistory } from '../controllers/user.controller.js';
+import { uploadImage } from '../utils/cloudinary.js';
 
 
 const router = Router();
 
-router.route("/register").post(registerUser);
+router.route("/register").post(upload.fields([
+    { name: 'avatar', maxCount: 1 },
+    { name: 'coverImage', maxCount: 1 }
+]),registerUser);
+
 router.route("/login").post(loginUser);
 router.route("/logout").post(verifyjwt, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
+router.route("/change-password").post(verifyjwt,changePassword);
+router.route("/current-user").get(verifyjwt,getcurrentUser);
+router.route("/update-account").patch(verifyjwt,updateaccountdetails);
+router.route("/update-user-avtar").patch(verifyjwt,uploadImage.single("avatar"),updateuseravtar);
+router.route("/update-cover-image").put(verifyjwt,uploadImage.single(coverImage),updatercoverimage);
+router.route("/c/:username").get(verifyjwt,getUserProfile);
+router.route("/watch-history").get(verifyjwt,getwatchhistory);
 
+export default router;
 
-
-// router.route("/profile").get(getUserProfile);
 // router.route("/profile").put(updateUserProfile);
-// router.route("/change-password").post(changePassword);
+// router.route("/profile").get(getUserProfile);
 // router.route("/forgot-password").post(forgotPassword);
 // router.route("/reset-password/:token").post(resetPassword);
 
@@ -25,7 +36,6 @@ router.route("/refresh-token").post(refreshAccessToken);
 
     
 
-export default router;
 
 // import {router as expressRouter} from 'express';
 // import {router as userRouter} from '../controllers/user.controller.js';

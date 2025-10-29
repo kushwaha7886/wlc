@@ -7,7 +7,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
 export const uploadImage = async (filePath) => {
   try {
     if (!filePath) {
