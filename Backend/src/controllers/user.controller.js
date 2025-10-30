@@ -1,6 +1,9 @@
-import {asyncHandler} from '../utils/asynchandler.js';
+// Add at the top with other imports
+import crypto from "crypto";
+import { sendMail } from "../utils/sendMail.js"; // Make sure you have this util!
+import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiError} from '../utils/ApiError.js';
-import {user} from '../models/User.model.js';
+import {user} from '../models/user.model.js';
 import {uploadSingleImage} from '../utils/cloudinary.js';
 import {apiResponse} from '../utils/ApiResponse.js';
 import jwt from 'jsonwebtoken';
@@ -199,68 +202,65 @@ const updatercoverimage = asyncHandler(async (req, res) => {
         },
         { new: true, runValidators: true }
     ).select('-password -__v -createdAt -updatedAt -watchHistory');
-
+    
     return res.status(200).json(new apiResponse(200, { user: updatedUser }, 'Cover image updated successfully'));
 });
 
 
-const forgotPassword = asyncHandler(async (req, res) => {});
-
-const resetPassword = asyncHandler(async (req, res) => {});
 
 const getUserProfile = asyncHandler(async (req, res) => {
-
-const {username} = req.params;
-if (!username?.trim) {
-    throw new ApiError(400, 'Username parameter is required');
-}
- const channel = await user.aggregate([
-    { $match: { username: username?.tolowercase() } },
-    { $lookup: { 
-      from:"subscriptions"
-        , localField: "_id",
-        foreignField: "channel",
-        as: "subscribers"
-     } },
-    { $lookup: { 
-        from: "subscriptions",
-        localField: "_id",
-        foreignField: "channel",
-        as: "subscribedto "
-     }
+    
+    const {username} = req.params;
+    if (!username?.trim) {
+        throw new ApiError(400, 'Username parameter is required');
+    }
+    const channel = await user.aggregate([
+        { $match: { username: username?.tolowercase() } },
+        { $lookup: { 
+            from:"subscriptions"
+            , localField: "_id",
+            foreignField: "channel",
+            as: "subscribers"
+        } },
+        { $lookup: { 
+            from: "subscriptions",
+            localField: "_id",
+            foreignField: "channel",
+            as: "subscribedto "
+        }
     },
     { $addFields: {
         subscribersCount: { $size: "$subscribers" },
         subscribedtoCount: { $size: "$subscribedto" }
-        }
-     },
-     {issubscribed:{
-        $cond: { 
-            if: {$in: [req.user?._id, "$subscribers.subscriber"]},
-            then: true,
-            else: false 
-       }}
-    },
-    { $project: {fullname:1,
-        username:1,
-        email:1,
-        coverimage:1,
-        subscriptioncount:1,
-        subscriberscount:1,
-        issubscribed:1,
-        avtar:1,
+    }
+},
+{issubscribed:{
+    $cond: { 
+        if: {$in: [req.user?._id, "$subscribers.subscriber"]},
+        then: true,
+        else: false 
     }}
+},
+{ $project: {fullname:1,
+    username:1,
+    email:1,
+    coverimage:1,
+    subscriptioncount:1,
+    subscriberscount:1,
+    issubscribed:1,
+    avtar:1,
+}}
 
 
 
 
 
- ]);
+]);
 if (!channel || channel.length === 0) {
     throw new ApiError(404, 'User not found');
 }
 return res.status(200).json(new apiResponse(200, { channel: channel[0] }, 'User profile fetched successfully'));
- 
+
 })
 
 const getwatchhistory = asyncHandler(async (req, res) => {
@@ -285,21 +285,98 @@ const getwatchhistory = asyncHandler(async (req, res) => {
                         }
                     }]
                 }
-                },{
-                 $addFields:{
-                owner:{$first:'$uploadedBy'} 
+            },{
+                $addFields:{
+                    owner:{$first:'$uploadedBy'} 
                 }
-                }]
-            }
-        },
-    ]);
-    return res.status(200).json(new apiResponse(200, { watchHistory: user[0].watchHistory }, 'Watch history fetched successfully'));
+            }]
+        }
+    },
+]);
+return res.status(200).json(new apiResponse(200, { watchHistory: user[0].watchHistory }, 'Watch history fetched successfully'));
+});
+
+// Forgot Password Controller
+const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        throw new ApiError(400, "Email is required");
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw new ApiError(404, "User with this email does not exist");
+    }
+
+    // Generate password reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hash = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    // Set token and expiry on user
+    user.passwordResetToken = hash;
+    user.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes expiry
+    await user.save({ validateBeforeSave: false });
+
+    // Construct reset URL (adjust domain as needed)
+    const resetUrl = `${req.protocol}://${req.get("host")}/reset-password/${resetToken}`;
+
+    // Send email
+    try {
+        await sendMail({
+            to: user.email,
+            subject: "Password Reset",
+            text: `You requested a password reset. Click here: ${resetUrl}`,
+            html: `<p>You requested a password reset.</p><p>Click <a href="${resetUrl}">here</a> to reset your password.</p>`
+        });
+    } catch (error) {
+        // Clear token fields on fail
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+        throw new ApiError(500, "Error sending password reset email");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "Password reset link sent to email")
+    );
+});
+
+// Reset Password Controller
+const resetPassword = asyncHandler(async (req, res) => {
+    const { token } = req.params; // From URL
+    const { password } = req.body;
+
+    if (!token || !password) {
+        throw new ApiError(400, "Token and new password are required");
+    }
+
+    const hash = crypto.createHash("sha256").update(token).digest("hex");
+
+    // Find user with valid token
+    const user = await User.findOne({
+        passwordResetToken: hash,
+        passwordResetExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+        throw new ApiError(400, "Token is invalid or expired");
+    }
+
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "Password has been reset successfully")
+    );
 });
 
 
 
 
-export {registerUser,loginUser,logoutUser,refreshAccessToken,getwatchhistory,changePassword,getcurrentUser,updateaccountdetails,forgotPassword,resetPassword,updateuseravtar,updatercoverimage,getUserProfile};
+export {forgotPassword,resetPassword,registerUser,loginUser,logoutUser,refreshAccessToken,getwatchhistory,changePassword,getcurrentUser,updateaccountdetails,forgotPassword,resetPassword,updateuseravtar,updatercoverimage,getUserProfile};
 
 
 
