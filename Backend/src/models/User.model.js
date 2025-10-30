@@ -99,5 +99,7 @@ userSchema.methods.generateJWT = function () {
 
 
 const User = mongoose.model('User', userSchema);
-export {User as user};
+export default User;
+export { User };
+
    
