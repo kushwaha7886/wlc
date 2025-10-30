@@ -1,9 +1,9 @@
 // Add at the top with other imports
 import crypto from "crypto";
 import { sendMail } from "../utils/sendMail.js"; // Make sure you have this util!
-import {asyncHandler} from '../utils/asynchandler.js'
+import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiError} from '../utils/ApiError.js';
-import {user} from '../models/User.model.js';
+import {user} from '../models/user.model.js';
 import {uploadSingleImage} from '../utils/cloudinary.js';
 import {apiResponse} from '../utils/ApiResponse.js';
 import jwt from 'jsonwebtoken';
