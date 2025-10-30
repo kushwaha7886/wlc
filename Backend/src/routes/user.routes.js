@@ -21,13 +21,13 @@ router.route("/update-user-avtar").patch(verifyjwt,uploadImage.single("avatar"),
 router.route("/update-cover-image").put(verifyjwt,uploadImage.single("coverImage"),updatercoverimage);
 router.route("/c/:username").get(verifyjwt,getUserProfile);
 router.route("/watch-history").get(verifyjwt,getwatchhistory);
+router.route("/forgot-password").post(forgotPassword);
+router.route("/reset-password/:token").post(resetPassword);
 
 export default router;
 
 // router.route("/profile").put(updateUserProfile);
 // router.route("/profile").get(getUserProfile);
-// router.route("/forgot-password").post(forgotPassword);
-// router.route("/reset-password/:token").post(resetPassword);
 
 
 
