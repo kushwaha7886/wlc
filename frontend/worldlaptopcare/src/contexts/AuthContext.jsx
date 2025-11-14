@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -11,50 +13,61 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in on app start
     const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    if (token && userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      }
+    if (token) {
+      // Verify token and get user data
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      fetchUserProfile();
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
+  const fetchUserProfile = async () => {
+    try {
+      const response = await api.get('/auth/profile');
+      setUser(response.data.user);
+      setIsLoggedIn(true);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      localStorage.removeItem('token');
+      delete api.defaults.headers.common['Authorization'];
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const login = (userData) => {
-    setIsLoggedIn(true);
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    setIsLoggedIn(true);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setIsLoggedIn(false);
     setUser(null);
+    setIsLoggedIn(false);
+    localStorage.removeItem('token');
+    delete api.defaults.headers.common['Authorization'];
+  };
+
+  const updateUser = (userData) => {
+    setUser(userData);
   };
 
   const isAdmin = user?.role === 'admin';
 
   const value = {
-    isLoggedIn,
     user,
+    isLoggedIn,
+    loading,
     login,
     logout,
-    loading,
-    isAdmin,
+    updateUser,
+    isAdmin
   };
 
   return (

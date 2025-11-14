@@ -1,9 +1,10 @@
-import api from './api.js';
+import api from './api';
 
 export const productService = {
-  // Get all products with optional query params
+  // Get all products with filters
   getProducts: async (params = {}) => {
-    const response = await api.get('/products', { params });
+    const queryString = new URLSearchParams(params).toString();
+    const response = await api.get(`/products?${queryString}`);
     return response.data;
   },
 
@@ -13,27 +14,23 @@ export const productService = {
     return response.data;
   },
 
-  // Get products by category
-  getProductsByCategory: async (categoryId) => {
-    const response = await api.get(`/categories/${categoryId}/products`);
+  // Get all categories
+  getCategories: async () => {
+    const response = await api.get('/categories');
     return response.data;
   },
 
-  // Create new product (admin)
-  createProduct: async (productData) => {
-    const response = await api.post('/products', productData);
+  // Get category by ID
+  getCategoryById: async (id) => {
+    const response = await api.get(`/categories/${id}`);
     return response.data;
   },
 
-  // Update product (admin)
-  updateProduct: async (id, productData) => {
-    const response = await api.put(`/products/${id}`, productData);
+  // Search products
+  searchProducts: async (query) => {
+    const response = await api.get(`/products?search=${encodeURIComponent(query)}`);
     return response.data;
-  },
-
-  // Delete product (admin)
-  deleteProduct: async (id) => {
-    const response = await api.delete(`/products/${id}`);
-    return response.data;
-  },
+  }
 };
+
+export default productService;
