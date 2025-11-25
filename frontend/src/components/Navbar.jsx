@@ -89,10 +89,26 @@ const Navbar = () => {
                       Orders
                     </Link>
                     {isAdmin && (
-                      <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        Admin Dashboard
-                      </Link>
+                      <>
+                        <div className="border-t border-gray-100"></div>
+                        <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium">
+                          Admin Dashboard
+                        </Link>
+                        <Link to="/admin/products" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          Manage Products
+                        </Link>
+                        <Link to="/admin/categories" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          Manage Categories
+                        </Link>
+                        <Link to="/admin/users" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          Manage Users
+                        </Link>
+                        <Link to="/admin/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                          Manage Orders
+                        </Link>
+                      </>
                     )}
+                    <div className="border-t border-gray-100"></div>
                     <button
                       onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

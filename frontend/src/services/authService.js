@@ -35,6 +35,12 @@ export const authService = {
   updateProfile: async (userData) => {
     const response = await api.patch('/users/profile', userData);
     return response.data;
+  },
+
+  // Delete current user
+  deleteUser: async () => {
+    const response = await api.delete('/users/current');
+    return response.data;
   }
 };
 

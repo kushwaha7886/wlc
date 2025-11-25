@@ -18,6 +18,7 @@ import AdminProductFormPage from "./Pages/AdminProductFormPage";
 import AdminCategoriesPage from "./Pages/AdminCategoriesPage";
 import AdminCategoryFormPage from "./Pages/AdminCategoryFormPage";
 import AdminUsersPage from "./Pages/AdminUsersPage";
+import AdminUserFormPage from "./Pages/AdminUserFormPage";
 import AdminOrdersPage from "./Pages/AdminOrdersPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
@@ -120,10 +121,42 @@ function App() {
             }
           />
           <Route
+            path="admin/categories/new"
+            element={
+              <AdminRoute>
+                <AdminCategoryFormPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="admin/categories/:id/edit"
+            element={
+              <AdminRoute>
+                <AdminCategoryFormPage />
+              </AdminRoute>
+            }
+          />
+          <Route
             path="admin/users"
             element={
               <AdminRoute>
                 <AdminUsersPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="admin/users/new"
+            element={
+              <AdminRoute>
+                <AdminUserFormPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="admin/users/:id/edit"
+            element={
+              <AdminRoute>
+                <AdminUserFormPage />
               </AdminRoute>
             }
           />

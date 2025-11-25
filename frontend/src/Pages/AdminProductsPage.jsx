@@ -24,13 +24,15 @@ const AdminProductsPage = () => {
     }
   }, [isLoggedIn]);
 
-
   const fetchProducts = async () => {
     try {
       const response = await api.get('/products');
-      setProducts(response.data.data || []);
+      // Ensure products is always an array
+      const productsData = response.data?.data;
+      setProducts(Array.isArray(productsData) ? productsData : []);
     } catch (err) {
       setError('Failed to load products. Please try again.');
+      setProducts([]); // Ensure we set to empty array on error
       console.error('Error fetching products:', err);
     } finally {
       setLoading(false);
@@ -40,7 +42,7 @@ const AdminProductsPage = () => {
   const fetchCategories = async () => {
     try {
       const response = await api.get('/categories');
-      setCategories(response.data.data || []);
+      setCategories(response.data?.data || []);
     } catch (err) {
       console.error('Error fetching categories:', err);
     }
@@ -58,7 +60,8 @@ const AdminProductsPage = () => {
     }
   };
 
-  const filteredProducts = products.filter(product => {
+  // Safe filtering - ensure products is always an array
+  const filteredProducts = (products || []).filter(product => {
     const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.brand.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = !categoryFilter || product.category._id === categoryFilter;

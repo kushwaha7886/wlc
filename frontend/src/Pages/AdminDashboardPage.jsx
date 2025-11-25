@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Users, Package, ShoppingCart, DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Users, Package, ShoppingCart, DollarSign, TrendingUp, TrendingDown, Plus } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import api from '../services/api';
@@ -36,8 +37,28 @@ const AdminDashboardPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-600 mt-2">Overview of your store's performance</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p className="text-gray-600 mt-2">Overview of your store's performance</p>
+          </div>
+          <div className="flex space-x-4">
+            <Link
+              to="/admin/products/new"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Add Product
+            </Link>
+            <Link
+              to="/admin/products"
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
+            >
+              <Package className="h-5 w-5 mr-2" />
+              Manage Products
+            </Link>
+          </div>
+        </div>
       </div>
 
       {error && <ErrorMessage message={error} onClose={() => setError(null)} />}
