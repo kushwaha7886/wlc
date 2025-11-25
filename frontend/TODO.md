@@ -1,0 +1,6 @@
+- [ ] Update index.css with global theme variables and styles
+- [ ] Update App.css with enhanced custom styles
+- [ ] Update Navbar.jsx with new theme styling
+- [ ] Update Footer.jsx to match the theme
+- [ ] Update Layout.jsx background and spacing
+- [ ] Test the theme by running the development server

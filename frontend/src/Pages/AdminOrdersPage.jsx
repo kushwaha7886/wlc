@@ -24,8 +24,8 @@ const AdminOrdersPage = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await api.get('/admin/orders');
-      setOrders(response.data.orders || []);
+      const response = await api.get('/orders');
+      setOrders(response.data.data || []);
     } catch (err) {
       setError('Failed to load orders. Please try again.');
       console.error('Error fetching orders:', err);

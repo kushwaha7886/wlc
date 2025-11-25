@@ -22,8 +22,8 @@ const AdminCategoriesPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await api.get('/admin/categories');
-      setCategories(response.data.categories || []);
+      const response = await api.get('/categories');
+      setCategories(response.data.data || []);
     } catch (err) {
       setError('Failed to load categories. Please try again.');
       console.error('Error fetching categories:', err);
@@ -36,7 +36,7 @@ const AdminCategoriesPage = () => {
     if (!window.confirm('Are you sure you want to delete this category? This action cannot be undone.')) return;
 
     try {
-      await api.delete(`/admin/categories/${categoryId}`);
+      await api.delete(`/categories/${categoryId}`);
       setCategories(prev => prev.filter(category => category._id !== categoryId));
     } catch (err) {
       setError('Failed to delete category. Please try again.');

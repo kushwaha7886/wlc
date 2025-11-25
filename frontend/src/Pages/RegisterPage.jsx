@@ -223,6 +223,8 @@ const RegisterPage = () => {
                 </div>
               </div>
 
+
+
               <div>
                 <label htmlFor="password" className="form-label">
                   Password

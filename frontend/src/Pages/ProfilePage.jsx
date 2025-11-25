@@ -43,8 +43,8 @@ const ProfilePage = () => {
     setSuccess(null);
 
     try {
-      const response = await api.patch('/users/profile', formData);
-      updateUser(response.data.user);
+      const response = await api.patch('/users/me', formData);
+      updateUser(response.data.data);
       setSuccess('Profile updated successfully!');
       setIsEditing(false);
     } catch (err) {

@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "claude": "claude"
+  },
   "dependencies": {
     "stripe": "^19.3.1"
   }

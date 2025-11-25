@@ -1,20 +1,11 @@
-# TODO List for Backend Improvements
+# Admin Features Implementation TODO
 
-## Cart Total Calculation
-- [x] Update Cart.controller.js to calculate total based on product prices and quantities
-
-## Payment Integration
-- [x] Implement Stripe payment processing in Payment.controller.js
-- [x] Update webhook handling for real Stripe events
-
-## Wishlist Routes
-- [x] Add JWT verification to Wishlist.route.js for protected routes
-
-## Admin Dashboard
-- [x] Update Admindashboard.controller.js to fetch real data from database (user count, order count, etc.)
-
-## Testing
-- [ ] Test cart total calculation
-- [ ] Test payment flow
-- [ ] Test wishlist auth
-- [ ] Test admin dashboard data
+- [x] Update Admindashboard.controller.js: Add topProducts to stats
+- [x] Update AdminDashboardPage.jsx: Change API URL to '/admindashboards/stats' and fix response handling to response.data.data
+- [x] Update AdminProductsPage.jsx: Change API URLs to '/products' and fix response handling
+- [x] Update AdminUsersPage.jsx: Change API URLs to '/users' and fix response handling
+- [x] Update AdminOrdersPage.jsx: Change API URLs to '/orders' and fix response handling
+- [x] Update AdminCategoriesPage.jsx: Change API URLs to '/categories' and fix response handling
+- [x] Update AdminCategoryFormPage.jsx: Change API URLs accordingly
+- [ ] Optionally integrate AdminDashboard model for storing stats
+- [ ] Test all admin features
